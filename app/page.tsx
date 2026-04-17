@@ -1,65 +1,114 @@
-import Image from "next/image";
+import Navbar from "@/component/layout/Navbar";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { ArrowRight, CheckCircle2, Zap, Search } from "lucide-react";
+import { Inter } from "next/font/google";
 
-export default function Home() {
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-sans",
+});
+
+export default function HomePage() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
+    <div
+      className={`${inter.className} min-h-screen bg-gradient-to-b from-white via-slate-50 to-white`}
+    >
+      <Navbar />
+
+      {/* Hero Section */}
+      <section className="relative pt-24 pb-32 overflow-hidden">
+        <div className="absolute inset-0 -z-10 flex justify-center">
+          <div className="w-[500px] h-[500px] bg-blue-500/20 blur-3xl rounded-full" />
+        </div>
+
+        <div className="container mx-auto px-6 text-center">
+          <h1 className="text-5xl md:text-7xl font-extrabold text-slate-900 tracking-tight mb-6 leading-tight">
+            Explainable Reasoning <br />
+            <span className="bg-gradient-to-r from-blue-600 to-indigo-500 text-transparent bg-clip-text">
+              Analysis of Subjective Answers
+            </span>
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+
+          <p className="max-w-2xl mx-auto text-lg text-slate-600 mb-10 leading-relaxed">
+            Intelligent answer checking system for students that provides
+            detailed feedback, identifies key concepts, and explains the
+            reasoning behind every evaluation.
+          </p>
+
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <Link href="/chat" className="cursor-pointer">
+              <Button
+                size="lg"
+                className="h-14 px-10 text-lg gap-2 bg-blue-600 hover:bg-blue-700 shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer"
+              >
+                Submit Answer <ArrowRight size={20} />
+              </Button>
+            </Link>
+
+            <Button
+              variant="outline"
+              size="lg"
+              className="h-14 px-10 text-lg border-slate-300 hover:bg-slate-100 transition-all duration-300 cursor-pointer"
             >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+              View History
+            </Button>
+          </div>
+        </div>
+      </section>
+
+      {/* Features Section */}
+      <section className="py-24 border-y bg-white">
+        <div className="container mx-auto px-6 text-center mb-16">
+          <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
+            Powerful Features
+          </h2>
+          <p className="text-slate-600 max-w-xl mx-auto">
+            Everything you need to evaluate and improve your answers with
+            clarity and precision.
           </p>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+
+        <div className="container mx-auto px-6 grid md:grid-cols-3 gap-8">
+          <FeatureCard
+            icon={<Search className="text-blue-600" />}
+            title="OCR Support"
+            description="Upload handwritten answers and automatically extract text with high accuracy."
+          />
+          <FeatureCard
+            icon={<Zap className="text-blue-600" />}
+            title="Detailed Scoring"
+            description="Get precise scoring with insights into strengths and areas for improvement."
+          />
+          <FeatureCard
+            icon={<CheckCircle2 className="text-blue-600" />}
+            title="Explainable Steps"
+            description="Understand exactly how your answer was evaluated step by step."
+          />
         </div>
-      </main>
+      </section>
+    </div>
+  );
+}
+
+function FeatureCard({
+  icon,
+  title,
+  description,
+}: {
+  icon: React.ReactNode;
+  title: string;
+  description: string;
+}) {
+  return (
+    <div className="group bg-white p-8 rounded-2xl border border-slate-200 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer">
+      <div className="w-14 h-14 bg-blue-50 rounded-xl flex items-center justify-center mb-6 group-hover:bg-blue-100 transition">
+        {icon}
+      </div>
+
+      <h3 className="text-xl font-semibold mb-3 text-slate-900">{title}</h3>
+
+      <p className="text-slate-600 leading-relaxed">{description}</p>
     </div>
   );
 }
