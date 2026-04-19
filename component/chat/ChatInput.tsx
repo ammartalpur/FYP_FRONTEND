@@ -3,29 +3,43 @@
 import { useState } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { Send, Loader2 } from "lucide-react";
+import { Send, Loader2, Paperclip, X } from "lucide-react";
 
 interface ChatInputProps {
-  onSubmit: (q: string, att: string, ans: string) => void;
+  onSubmit: (q: string, qFile: File | null, ans: string, aFile: File | null) => void;
   isLoading: boolean;
 }
 
 export default function ChatInput({ onSubmit, isLoading }: ChatInputProps) {
   const [question, setQuestion] = useState("");
-  const [attachment, setAttachment] = useState("");
+  const [questionFile, setQuestionFile] = useState<File | null>(null);
   const [userAnswer, setUserAnswer] = useState("");
+  const [answerFile, setAnswerFile] = useState<File | null>(null);
 
   const canSubmit = question.trim() && userAnswer.trim() && !isLoading;
 
   const handleAction = () => {
     if (!canSubmit) return;
 
-    onSubmit(question, attachment, userAnswer);
+    onSubmit(question, questionFile, userAnswer, answerFile);
 
     // 🧼 Clear fields after submit (better chat UX)
     setQuestion("");
-    setAttachment("");
+    setQuestionFile(null);
     setUserAnswer("");
+    setAnswerFile(null);
+  };
+
+  const handleQuestionFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      setQuestionFile(e.target.files[0]);
+    }
+  };
+
+  const handleAnswerFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      setAnswerFile(e.target.files[0]);
+    }
   };
 
   // ⌨️ Allow Enter to submit (without breaking multiline)
@@ -36,56 +50,124 @@ export default function ChatInput({ onSubmit, isLoading }: ChatInputProps) {
   };
 
   return (
-    <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
-      {/* QUESTION */}
-      <Textarea
-        placeholder="Enter question..."
-        value={question}
-        onChange={(e) => setQuestion(e.target.value)}
-      />
+    <div className="bg-white rounded-2xl border border-slate-200 shadow-lg p-6 space-y-5 max-h-96 overflow-y-auto">
+      {/* LABELS AND INPUTS */}
+      <div className="space-y-5">
+        {/* QUESTION */}
+        <div className="space-y-2">
+          <label className="block text-sm font-semibold text-slate-700">
+            Question <span className="text-red-500">*</span>
+          </label>
+          <Textarea
+            placeholder="Enter the exam/assignment question here..."
+            value={question}
+            onChange={(e) => setQuestion(e.target.value)}
+            className="border-slate-300 focus:border-blue-500 focus:ring-blue-500 rounded-lg p-3 text-sm"
+          />
+          
+          {/* QUESTION FILE UPLOAD */}
+          <div className="flex gap-2 items-center mt-2">
+            <label className="flex items-center gap-2 px-3 py-2 bg-blue-50 hover:bg-blue-100 border border-blue-300 rounded-lg cursor-pointer transition-colors">
+              <Paperclip size={16} className="text-blue-600" />
+              <span className="text-sm text-blue-600 font-medium">Attach file</span>
+              <input
+                type="file"
+                onChange={handleQuestionFileChange}
+                className="hidden"
+                accept=".pdf,.doc,.docx,.txt,.png,.jpg,.jpeg"
+              />
+            </label>
+            {questionFile && (
+              <div className="flex items-center gap-2 px-3 py-2 bg-green-50 border border-green-300 rounded-lg">
+                <span className="text-xs font-medium text-green-700">{questionFile.name}</span>
+                <button
+                  onClick={() => setQuestionFile(null)}
+                  className="text-green-600 hover:text-green-700"
+                >
+                  <X size={14} />
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
 
-      {/* REFERENCE / ATTACHMENT */}
-      <Textarea
-        placeholder="Enter reference answer (optional)"
-        value={attachment}
-        onChange={(e) => setAttachment(e.target.value)}
-      />
-
-      {/* USER ANSWER */}
-      <Textarea
-        placeholder="Write your answer..."
-        value={userAnswer}
-        onChange={(e) => setUserAnswer(e.target.value)}
-        onKeyDown={handleKeyDown}
-      />
+        {/* USER ANSWER */}
+        <div className="space-y-2">
+          <label className="block text-sm font-semibold text-slate-700">
+            Your Answer <span className="text-red-500">*</span>
+          </label>
+          <Textarea
+            placeholder="Write your answer here. Press Ctrl+Enter to submit..."
+            value={userAnswer}
+            onChange={(e) => setUserAnswer(e.target.value)}
+            onKeyDown={handleKeyDown}
+            className="border-slate-300 focus:border-blue-500 focus:ring-blue-500 rounded-lg p-3 text-sm min-h-32"
+          />
+          
+          {/* ANSWER FILE UPLOAD */}
+          <div className="flex gap-2 items-center mt-2">
+            <label className="flex items-center gap-2 px-3 py-2 bg-blue-50 hover:bg-blue-100 border border-blue-300 rounded-lg cursor-pointer transition-colors">
+              <Paperclip size={16} className="text-blue-600" />
+              <span className="text-sm text-blue-600 font-medium">Attach file</span>
+              <input
+                type="file"
+                onChange={handleAnswerFileChange}
+                className="hidden"
+                accept=".pdf,.doc,.docx,.txt,.png,.jpg,.jpeg"
+              />
+            </label>
+            {answerFile && (
+              <div className="flex items-center gap-2 px-3 py-2 bg-green-50 border border-green-300 rounded-lg">
+                <span className="text-xs font-medium text-green-700">{answerFile.name}</span>
+                <button
+                  onClick={() => setAnswerFile(null)}
+                  className="text-green-600 hover:text-green-700"
+                >
+                  <X size={14} />
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
 
       {/* UX HINT */}
       {!question.trim() || !userAnswer.trim() ? (
-        <p className="text-xs text-gray-400">
-          Question and answer are required to analyze
-        </p>
+        <div className="flex items-center gap-2 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+          <div className="w-1.5 h-1.5 rounded-full bg-amber-500"></div>
+          <p className="text-xs text-amber-800 font-medium">
+            Question and answer are required to analyze
+          </p>
+        </div>
       ) : null}
 
       {/* ACTION BAR */}
-      <div className="flex gap-3 justify-end items-center pt-2 border-t">
+      <div className="flex gap-3 justify-between items-center pt-4 border-t border-slate-200">
+        <div className="text-xs text-slate-500">
+          {canSubmit ? (
+            <span className="text-green-600 font-medium">✓ Ready to analyze</span>
+          ) : (
+            <span>Fill in required fields to continue</span>
+          )}
+        </div>
         <Button
-          className={`px-10 transition ${
+          className={`px-6 py-2 font-semibold rounded-lg transition-all flex items-center gap-2 ${
             canSubmit
-              ? "bg-blue-600 hover:bg-blue-700"
-              : "bg-gray-300 cursor-not-allowed"
+              ? "bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-md hover:shadow-lg"
+              : "bg-slate-200 text-slate-500 cursor-not-allowed"
           }`}
           onClick={handleAction}
           disabled={!canSubmit}
         >
           {isLoading ? (
             <>
-              <Loader2 className="animate-spin mr-2 h-4 w-4" />
-              Analyzing...
+              <Loader2 className="animate-spin h-4 w-4" />
+              <span>Analyzing...</span>
             </>
           ) : (
             <>
-              <Send size={16} className="mr-2" />
-              Analyze Answer
+              <Send size={16} />
+              <span>Analyze Answer</span>
             </>
           )}
         </Button>

@@ -46,13 +46,15 @@ export default function HomePage() {
               </Button>
             </Link>
 
-            <Button
-              variant="outline"
-              size="lg"
-              className="h-14 px-10 text-lg border-slate-300 hover:bg-slate-100 transition-all duration-300 cursor-pointer"
-            >
-              View History
-            </Button>
+            <Link href="/history" className="cursor-pointer">
+              <Button
+                variant="outline"
+                size="lg"
+                className="h-14 px-10 text-lg border-slate-300 hover:bg-slate-100 transition-all duration-300 cursor-pointer"
+              >
+                View History
+              </Button>
+            </Link>
           </div>
         </div>
       </section>
